@@ -29,9 +29,3 @@ Added test option for WakeOnWLAN:
 ]
  ```
 
-# Dev notes about JointSpace URLs
-
-POST to /6/menuitems/settings/current allow to get current Ambilight settings
-POST to /6/menuitems/settings/update allow to update Ambilight settings
-GET to /6/menuitems/settings/structure allow to have the details of the menu and options
-
