@@ -1,7 +1,7 @@
 {
   "name": "homebridge-saphir-tv",
   "version": "0.0.2",
-  "description": "Homebridge module for the Philips TV (on SaphirTV OS) with JointSpace enabled and ready for 2019 models",
+  "description": "Homebridge module for the Philips TV (on SaphiTV OS) with JointSpace enabled and ready for 2020 model",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,11 +25,7 @@
     "node": ">=4.3.2",
     "homebridge": ">=0.4.46"
   },
-  "author": "TheAbstractDev",
+  "author": "BenGore",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/TheAbstractDev/homebridge-saphir-tv/issues"
-  },
-  "homepage": "https://github.com/TheAbstractDev/homebridge-saphir-tv#readme",
   "devDependencies": {}
 }
