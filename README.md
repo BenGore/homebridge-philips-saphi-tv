@@ -1,17 +1,12 @@
 # homebridge-philips-saphi-tv
-Homebridge module for Philips TV (with JointSpace enabled) with Power on/off, Inputs list & control
+Homebridge module for Philips TV (with JointSpace enabled) with Power on/off
 
 # Description
 
-This plugin is a fork of [homebridge-philipstv-enhanced](https://github.com/blickfangQ2/homebridge-philipstv-enhanced).
+This plugin is a fork of TheAbstractDev/homebridge-philips-saphi-tv (https://github.com/TheAbstractDev/homebridge-philips-saphi-tv).
 
-It has been modified to work on a 55OLED754/12 TV (2019 model with SaphirTV OS witch is not on Android TV) and may not work on older one. Code may need ajustement for Ambilight to work on other 2018 & 2019 models
+It has been modified to work on a 55OLED754/12 TV (2020 model with SaphiTV OS - not Android TV) and may not work on other ones. Code may need ajustement for Ambilight to work on other models
 
-# Installation
-
-1. Install homebridge using: npm install -g homebridge
-2. Install this plugin using: npm install -g homebridge-philipstv-2019
-3. Update your configuration file. See the sample below.
 
 # Configuration
  
@@ -26,20 +21,10 @@ Added test option for WakeOnWLAN:
         "name": "TV",
         "ip_address": "10.0.1.23",
         "poll_status_interval": "60",
-        "model_year" : "2019",
-        "model_name": "55OLED754/12",
+        "model_year" : "2020",
+        "model_name": "75PUS7805/12",
         "model_serial_no": "123-456-ABC",
         "wol_url": "wol://18:8e:d5:a2:8c:66"
-        "inputs": [
-            {
-                "id": "hdmi1",
-                "name": "Apple TV"
-            },
-            {
-                "id": "hdmi2",
-                "name": "PS4"
-            }
-        ]
     }
 ]
  ```
