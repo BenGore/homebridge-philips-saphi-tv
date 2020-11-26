@@ -25,7 +25,6 @@ function HttpStatusAccessory(log, config) {
 	this.model_name = config["model_name"];
 	this.model_version = config["model_version"];
     this.model_serial_no = config["model_serial_no"];
-    this.inputs = config["inputs"];
     this.activeServices = [];
 
     // CREDENTIALS FOR API
@@ -34,6 +33,9 @@ function HttpStatusAccessory(log, config) {
 
     // CHOOSING API VERSION BY MODEL/YEAR
     switch (this.model_year_nr) {
+	case 2020:
+	    this.api_version = 6;
+	    break;
         case 2019:
             this.api_version = 6;
             break;
@@ -76,10 +78,7 @@ function HttpStatusAccessory(log, config) {
     this.power_off_body = JSON.stringify({
         "powerstate": "Standby"
     });
-
-    // INPUT
-    this.input_url = this.protocol + "://" + this.ip_address + ":" + this.portno + "/" + this.api_version + "/input/key";
-
+    
     // POLLING ENABLED?
     this.interval = parseInt(this.poll_status_interval);
     this.switchHandling = "check";
@@ -318,162 +317,6 @@ HttpStatusAccessory.prototype = {
         }.bind(this));
     },
 
-    /// Send a key  -----------------------------------------------------------------------------------------------------------
-    sendKey: function(key, callback, context) {
-        this.log("Entering %s with context: %s and target value: %s", arguments.callee.name, context, key);
-
-        var keyName = null;
-        if (key == Characteristic.RemoteKey.ARROW_UP) {
-            keyName = "CursorUp";
-        } else if (key == Characteristic.RemoteKey.ARROW_LEFT) {
-            keyName = "CursorLeft";
-        } else if (key == Characteristic.RemoteKey.ARROW_RIGHT) {
-            keyName = "CursorRight";
-        } else if (key == Characteristic.RemoteKey.ARROW_DOWN) {
-            keyName = "CursorDown";
-        } else if (key == Characteristic.RemoteKey.BACK) {
-            keyName = "Back";
-        } else if (key == Characteristic.RemoteKey.EXIT) {
-            keyName = "Exit";
-        } else if (key == Characteristic.RemoteKey.INFORMATION) {
-            keyName = "Home";
-        } else if (key == Characteristic.RemoteKey.SELECT) {
-            keyName = "Confirm";
-        } else if (key == Characteristic.RemoteKey.PLAY_PAUSE) {
-            keyName = "PlayPause";
-        } else if (key == 'VolumeUp') {
-            keyName = "VolumeUp";
-        } else if (key == 'VolumeDown') {
-            keyName = "VolumeDown";
-        }
-        if (keyName != null) {
-            url = this.input_url;
-            body = JSON.stringify({"key": keyName});
-            this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
-                if (error) {
-                    this.log('sendKey - error: ', error.message);
-                } else {
-                    this.log('sendKey - succeeded - %s', key);
-                }
-            }.bind(this));
-        }
-        callback(null, null);
-    },
-
-   /// Next input  -----------------------------------------------------------------------------------------------------------
-    setNextInput: function(inputState, callback, context) {
-        this.log.debug("Entering %s with context: %s and target value: %s", arguments.callee.name, context, inputState);
-
-        url = this.input_url;
-        body = JSON.stringify({"key": "Source"});
-        this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody)
-        {
-            if (error)
-            {
-                this.log('setNextInput - error: ', error.message);
-            }
-            else
-            {
-                this.log('Source - succeeded - current state: %s', inputState);
-
-                setTimeout(function ()
-                {
-                    body = JSON.stringify({"key": "CursorRight"});
-
-                    this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody)
-                    {
-                        if (error)
-                        {
-                             this.log('setNextInput - error: ', error.message);
-                        }
-                        else
-                        {
-                            this.log('Down - succeeded - current state: %s', inputState);
-                            setTimeout(function()
-                            {
-                                body = JSON.stringify({"key": "Confirm"});
-
-                                this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody)
-                                {
-                                    if (error)
-                                    {
-                                        this.log('setNextInput - error: ', error.message);
-                                    }
-                                    else
-                                    {
-                                        this.log.info("Source change completed");
-                                    }
-                                }.bind(this));
-                            }.bind(this), 800);
-                        }
-                    }.bind(this));
-				}.bind(this), 800);
-            }
-        }.bind(this));
-        callback(null, null);
-    },
-
-    getNextInput: function(callback, context) {
-        callback(null, null);
-    },
-
-   /// Previous input  -----------------------------------------------------------------------------------------------------------
-    setPreviousInput: function(inputState, callback, context) {
-        this.log.debug("Entering %s with context: %s and target value: %s", arguments.callee.name, context, inputState);
-
-        url = this.input_url;
-        body = JSON.stringify({"key": "Source"});
-        this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody)
-        {
-            if (error)
-            {
-                this.log('setPreviousInput - error: ', error.message);
-            }
-            else
-            {
-                this.log('Source - succeeded - current state: %s', inputState);
-
-                setTimeout(function ()
-                {
-                    body = JSON.stringify({"key": "CursorLeft"});
-
-                    this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody)
-                    {
-                        if (error)
-                        {
-                             this.log('setPreviousInput - error: ', error.message);
-                        }
-                        else
-                        {
-                            this.log('Down - succeeded - current state: %s', inputState);
-                            setTimeout(function()
-                            {
-                                body = JSON.stringify({"key": "Confirm"});
-
-                                this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody)
-                                {
-                                    if (error)
-                                    {
-                                        this.log('setPreviousInput - error: ', error.message);
-                                    }
-                                    else
-                                    {
-                                        this.log.info("Source change completed");
-                                    }
-                                }.bind(this));
-                            }.bind(this), 800);
-                        }
-                    }.bind(this));
-				}.bind(this), 800);
-            }
-        }.bind(this));
-        callback(null, null);
-    },
-
-    getPreviousInput: function(callback, context) {
-        callback(null, null);
-    },
-
     identify: function(callback) {
         this.log("Identify requested!");
         callback(); // success
@@ -516,50 +359,9 @@ HttpStatusAccessory.prototype = {
         this.activeServices.push(this.televisionService);
     },
 
-    configureInputSourcesService: function() {
-        this.inputs.forEach((element, index, array) => {
-            var input = new Service.InputSource(element.name, 'inputSource'+ element.id);            
-            input
-                .setCharacteristic(Characteristic.Name, element.name)
-                .setCharacteristic(Characteristic.Identifier, element.id)
-                .setCharacteristic(Characteristic.ConfiguredName, element.name)
-                .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-                .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
-                .setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState.SHOWN)
-                .setCharacteristic(Characteristic.InputDeviceType, Characteristic.InputDeviceType.TV)
-                .setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.HDMI);
-
-            this.televisionService.addLinkedService(input);
-            this.activeServices.push(input);
-        });
-    },
-
-    configureNextInputService: function() {
-        this.NextInputService = new Service.Switch(this.name + " Next input", '0b');
-        this.NextInputService
-            .getCharacteristic(Characteristic.On)
-            .on('get', this.getNextInput.bind(this))
-            .on('set', this.setNextInput.bind(this));
-
-        this.activeServices.push(this.NextInputService);
-    },
-
-    configurePreviousInputService: function() {
-        this.PreviousInputService = new Service.Switch(this.name + " Previous input", '0c');
-        this.PreviousInputService
-            .getCharacteristic(Characteristic.On)
-            .on('get', this.getPreviousInput.bind(this))
-            .on('set', this.setPreviousInput.bind(this));
-
-        this.activeServices.push(this.PreviousInputService);
-    },
-
     getServices: function() {
         var that = this;
         this.configureTelevisionService()
-        this.configureInputSourcesService()
-        this.configureNextInputService()
-        this.configurePreviousInputService()
         
         return this.activeServices;
     }
